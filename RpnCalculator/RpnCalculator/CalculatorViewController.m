@@ -36,8 +36,6 @@
 
 - (IBAction)digitPressed:(UIButton *)sender {
     NSString *digit = sender.currentTitle;   
-    [self appendToHistory:digit];
-
     if (self.userIsInTheMiddleOfEnteringANumber) {
         self.display.text = [self.display.text stringByAppendingString:digit];
     } else {
@@ -52,9 +50,22 @@
     self.userIsInTheMiddleOfEnteringANumber = false;
 }
 
+- (IBAction)backButtonPressed:(id)sender {
+    if (self.display.text.length > 0) {
+        self.display.text = [self.display.text substringToIndex:self.display.text.length - 1];
+        if (self.display.text.length == 0) {
+            self.display.text = @"0";
+            self.userIsInTheMiddleOfEnteringANumber = false;
+        } else {
+            self.userIsInTheMiddleOfEnteringANumber = true;
+        }
+    }
+}
+
 - (IBAction)enterPressed {
     [self.brain pushOperand:[self.display.text doubleValue]];
     self.userIsInTheMiddleOfEnteringANumber = false;
+    [self appendToHistory:self.display.text];
     [self appendToHistory:@" "];
 }
 
