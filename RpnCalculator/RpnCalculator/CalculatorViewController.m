@@ -8,13 +8,14 @@
 
 #import "CalculatorViewController.h"
 #import "CalculatorBrain.h"
+#import "Variable.h"
 #include <math.h>
 
 @interface CalculatorViewController()
 @property (nonatomic) bool userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
-@property (nonatomic, strong) NSNumberFormatter *formatter;
--(void)appendToHistory:(NSString *)value;
+@property (nonatomic, strong) NSNumberFormatter *decimalFormatChecker;
+- (void) refreshHistory;
 @end
 
 @implementation CalculatorViewController
@@ -22,9 +23,9 @@
 @synthesize history = _history;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize brain = _brain;
-@synthesize formatter = _formatter;
+@synthesize decimalFormatChecker = _formatter;
 
-- (NSNumberFormatter *) formatter {
+- (NSNumberFormatter *) decimalFormatChecker {
     if (! _formatter) _formatter =[[NSNumberFormatter alloc] init];
     return _formatter;
 }
@@ -35,19 +36,28 @@
 }
 
 - (IBAction)digitPressed:(UIButton *)sender {
-    NSString *digit = sender.currentTitle;   
+    NSString *digit = sender.currentTitle;
     if (self.userIsInTheMiddleOfEnteringANumber) {
         self.display.text = [self.display.text stringByAppendingString:digit];
     } else {
+        if ([digit isEqualToString:@"0"]) return; // "00" is no good
         self.display.text = digit;
         self.userIsInTheMiddleOfEnteringANumber = true;
     }
 }
+
 - (IBAction)clearButtonPressed {
     [self.brain clear];
     self.display.text = @"0";
-    self.history.text = @"";
+    [self refreshHistory];
     self.userIsInTheMiddleOfEnteringANumber = false;
+}
+
+- (IBAction)variableButtonPressed:(UIButton *)sender {
+    NSString *key = sender.currentTitle;
+    Variable *variable = [[Variable alloc] initWithKey:key];
+    [self.brain pushOperand:variable];
+    [self refreshHistory];
 }
 
 - (IBAction)backButtonPressed:(id)sender {
@@ -63,32 +73,49 @@
 }
 
 - (IBAction)enterPressed {
-    [self.brain pushOperand:[self.display.text doubleValue]];
+    [self.brain pushOperand:[NSNumber numberWithDouble:[self.display.text doubleValue]]];
     self.userIsInTheMiddleOfEnteringANumber = false;
-    [self appendToHistory:self.display.text];
-    [self appendToHistory:@" "];
+    [self refreshHistory];
 }
 
 - (IBAction)decimalPointPressed:(UIButton *)sender {
     NSString *possibleNewValue = [self.display.text stringByAppendingString:sender.currentTitle];
-    if ([self.formatter numberFromString:possibleNewValue]) {
+    if ([self.decimalFormatChecker numberFromString:possibleNewValue]) {
         self.display.text = possibleNewValue;
         self.userIsInTheMiddleOfEnteringANumber = true;
-        [self appendToHistory:sender.currentTitle];
     }
+}
+
+- (IBAction)testOneButtonPressed:(UIButton *)sender {
+//    [self.brain ]
+    
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
     if (self.userIsInTheMiddleOfEnteringANumber) [self enterPressed];
-    [self appendToHistory:sender.currentTitle];
-    [self appendToHistory:@" "];
     double result = [self.brain performOperation:sender.currentTitle];
     NSString * resultString = [NSString stringWithFormat:@"%g", result];
     self.display.text = resultString;
+    [self refreshHistory];
+
 }
 
-- (void)appendToHistory:(NSString *)value {
-    self.history.text = [self.history.text stringByAppendingString:value];
+- (IBAction)posNegButtonPressed:(UIButton *)sender {
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        NSRange found = [self.display.text rangeOfString:@"-"];
+        if (found.location == NSNotFound) {
+            self.display.text = [@"-" stringByAppendingString:self.display.text];
+        } else {
+            self.display.text = [self.display.text stringByReplacingOccurrencesOfString:@"-" withString:@""];
+        }
+//        self.display.text =
+    } else {
+        [self operationPressed:sender];
+    }
+}
+
+- (void) refreshHistory {
+    self.history.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
 }
 
 @end
