@@ -108,7 +108,6 @@
         } else {
             self.display.text = [self.display.text stringByReplacingOccurrencesOfString:@"-" withString:@""];
         }
-//        self.display.text =
     } else {
         [self operationPressed:sender];
     }
