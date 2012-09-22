@@ -24,4 +24,8 @@
     return self.key.description;
 }
 
++ (Variable *) getVariableForKey:(NSObject *) theKey {
+    return [[Variable alloc] initWithKey:theKey];
+}
+
 @end

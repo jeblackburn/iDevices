@@ -21,6 +21,7 @@
 @implementation CalculatorViewController
 @synthesize display = _display;
 @synthesize history = _history;
+@synthesize description = _description;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize brain = _brain;
 @synthesize decimalFormatChecker = _formatter;
@@ -97,7 +98,7 @@
     NSString * resultString = [NSString stringWithFormat:@"%g", result];
     self.display.text = resultString;
     [self refreshHistory];
-
+    self.description.text = [CalculatorBrain descriptionOfProgram:(self.brain.program)];
 }
 
 - (IBAction)posNegButtonPressed:(UIButton *)sender {
@@ -117,4 +118,8 @@
     self.history.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
 }
 
+- (void)viewDidUnload {
+    [self setDescription:nil];
+    [super viewDidUnload];
+}
 @end

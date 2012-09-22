@@ -106,7 +106,7 @@
 }
 
 + (NSString *)descriptionOfProgram:(id)program {
-    NSString *result = @"";
+    NSString *result = @"hrmmm...";
     if ([program isKindOfClass:[NSArray class]]) {
         NSMutableArray *stack = [program mutableCopy];
         result = [self appendStackItemToOutputString:stack];
