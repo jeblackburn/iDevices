@@ -32,8 +32,7 @@
     if ([topOfStack isKindOfClass:[NSNumber class]]){
         result = [topOfStack description];
     } else if ([topOfStack conformsToProtocol:@protocol(Operation)]) {
-        NSString *fmt = [topOfStack needsParentheses] ? @"(%@)" : @"%@";
-        result = [NSString stringWithFormat:fmt, [topOfStack description:stack]];
+        result = [topOfStack description:stack];
     }
     return result;
 }
@@ -52,7 +51,6 @@
     NSString *first = [OperationUtil popDescriptionOffStack:stack];
     return [NSString stringWithFormat:@"%@ * %@", first, second];
 }
-- (BOOL) needsParentheses {return false;}
 @end
 
 @implementation Divide
@@ -67,7 +65,6 @@
     NSString *first = [OperationUtil popDescriptionOffStack:stack];
     return [NSString stringWithFormat:@"%@ / %@", first, second];
 }
-- (BOOL) needsParentheses {return false;}
 @end
 
 @implementation Add
@@ -80,9 +77,8 @@
 - (NSString *) description:(NSMutableArray *)stack {
     NSString *second = [OperationUtil popDescriptionOffStack:stack];
     NSString *first = [OperationUtil popDescriptionOffStack:stack];
-    return [NSString stringWithFormat:@"%@ + %@", first, second];
+    return [NSString stringWithFormat:@"(%@ + %@)", first, second];
 }
-- (BOOL) needsParentheses {return true;}
 @end
 
 @implementation Subtract
@@ -95,9 +91,8 @@
 - (NSString *) description:(NSMutableArray *)stack {
     NSString *second = [OperationUtil popDescriptionOffStack:stack];
     NSString *first = [OperationUtil popDescriptionOffStack:stack];
-    return [NSString stringWithFormat:@"%@ - %@", first, second];
+    return [NSString stringWithFormat:@"(%@ - %@)", first, second];
 }
-- (BOOL) needsParentheses {return true;}
 @end
 
 @implementation Sine
@@ -107,7 +102,6 @@
 - (NSString *) description:(NSMutableArray *)stack {
     return [NSString stringWithFormat:@"sin(%@)", [OperationUtil popDescriptionOffStack:stack]];
 }
-- (BOOL) needsParentheses {return false;}
 @end
 
 @implementation Cos
@@ -117,7 +111,6 @@
 - (NSString *) description:(NSMutableArray *)stack {
     return [NSString stringWithFormat:@"cos(%@)", [OperationUtil popDescriptionOffStack:stack]];
 }
-- (BOOL) needsParentheses {return false;}
 @end
 
 @implementation Sqrt
@@ -127,7 +120,6 @@
 - (NSString *) description:(NSMutableArray *)stack {
     return [NSString stringWithFormat:@"sqrt(%@)", [OperationUtil popDescriptionOffStack:stack]];
 }
-- (BOOL) needsParentheses {return false;}
 @end
 
 @implementation Pi
@@ -141,7 +133,6 @@
         return [NSString stringWithFormat:@"PI * %@", [OperationUtil popDescriptionOffStack:stack]];
     } else return @"PI";
 }
-- (BOOL) needsParentheses {return false;}
 @end
 
 @implementation Inverse
@@ -151,6 +142,5 @@
 - (NSString *) description:(NSMutableArray *)stack {
     return [NSString stringWithFormat:@"-1 * %@", [OperationUtil popDescriptionOffStack:stack]];
 }
-- (BOOL) needsParentheses {return false;}
 @end
 

@@ -102,7 +102,7 @@
 }
 
 - (IBAction)posNegButtonPressed:(UIButton *)sender {
-    if (self.userIsInTheMiddleOfEnteringANumber) {
+    if (self.userIsInTheMiddleOfEnteringANumber || [self.display.text doubleValue] == 0) {
         NSRange found = [self.display.text rangeOfString:@"-"];
         if (found.location == NSNotFound) {
             self.display.text = [@"-" stringByAppendingString:self.display.text];

@@ -15,7 +15,6 @@
 @protocol Operation
 - (double) operate:(NSMutableArray *) stack;
 - (NSString *) description:(NSMutableArray *) stack;
-- (BOOL) needsParentheses;
 @end
 
 @interface Multiply : NSObject <Operation>

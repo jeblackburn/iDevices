@@ -63,7 +63,7 @@
     if (nextItem) {
         [stack removeLastObject];
         if ([nextItem conformsToProtocol:@protocol(Operation)]) {
-            description = [description stringByAppendingFormat:@"(%@)", [nextItem description:stack]];
+            description = [description stringByAppendingFormat:@"%@", [nextItem description:stack]];
         } else {
             description = [description stringByAppendingFormat:@"%@ ", nextItem];
         }

@@ -213,7 +213,7 @@
 		61AEB96C14E0D320002E1BC9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = 61AEB96F14E0D320002E1BC9 /* Build configuration list for PBXProject "RpnCalculator" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -448,6 +448,7 @@
 				61305B86160D3F38002BFFDD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		61AEB96F14E0D320002E1BC9 /* Build configuration list for PBXProject "RpnCalculator" */ = {
 			isa = XCConfigurationList;
