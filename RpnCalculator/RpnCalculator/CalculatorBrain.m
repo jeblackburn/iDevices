@@ -8,6 +8,7 @@
 
 #import "CalculatorBrain.h"
 #import "Variable.h"
+#import "Operation.h"
 #include <math.h>
 
 @interface CalculatorBrain()
@@ -18,44 +19,6 @@
 @implementation CalculatorBrain
 
 @synthesize programStack = _programStack;
-
-+ (double)popOperandOffStack:(NSMutableArray *) stack {
-    double result = 0;
-    id topOfStack = [stack lastObject];
-    if (topOfStack) [stack removeLastObject];
-    
-    if ([topOfStack isKindOfClass:[NSNumber class]]){
-        return [topOfStack doubleValue];
-    } else if ([topOfStack isKindOfClass:[NSString class]]) {
-        NSString *operation = topOfStack;
-        if ([@"*" isEqual:operation]) {
-            result = [self popOperandOffStack:stack] * [self popOperandOffStack:stack];
-        } else if ([@"+" isEqual:operation]) {
-            result = [self popOperandOffStack:stack] + [self popOperandOffStack:stack];
-        } else if ([@"/" isEqual:operation]) {
-            double right = [self popOperandOffStack:stack];
-            double left = [self popOperandOffStack:stack];
-            result = left / right;
-        } else if ([@"-" isEqual:operation]) {
-            double right = [self popOperandOffStack:stack];
-            double left = [self popOperandOffStack:stack];
-            result = left - right;
-        } else if ([@"sin" isEqual:operation]) {
-            result = sin([self popOperandOffStack:stack]);
-        } else if ([@"cos" isEqual:operation]) {
-            result = cos([self popOperandOffStack:stack]);
-        } else if ([@"sqrt" isEqual:operation]) {
-            result = sqrt([self popOperandOffStack:stack]);
-        } else if ([@"π" isEqual:operation]) {
-            double coefficient = 1;
-            if ([stack lastObject]) coefficient = [self popOperandOffStack:stack];
-            result = M_PI * coefficient;
-        } else if ([@"+/-" isEqual:operation]) {
-            result = -1 * [self popOperandOffStack:stack];
-        }
-    } 
-    return result;
-}
 
 + (NSSet *)variablesUsedInProgram:(id)program {
     NSMutableSet *variables = [[NSMutableSet alloc] init];
@@ -76,7 +39,7 @@
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
-    return [self popOperandOffStack:stack];
+    return [OperationUtil popOperandOffStack:stack];
 }
 
 + (double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues {
@@ -99,8 +62,11 @@
     id nextItem = [stack lastObject];
     if (nextItem) {
         [stack removeLastObject];
-        description = [self appendStackItemToOutputString:stack];
-        description = [description stringByAppendingFormat:@"%@ ", nextItem];
+        if ([nextItem conformsToProtocol:@protocol(Operation)]) {
+            description = [description stringByAppendingFormat:@"(%@)", [nextItem description:stack]];
+        } else {
+            description = [description stringByAppendingFormat:@"%@ ", nextItem];
+        }
     }
     return description;
 }
@@ -113,6 +79,23 @@
     }
     return result;
 }
+
+
++ (id <Operation>) fromString:(NSString *) opName {
+    
+    if ([@"*" isEqual:opName])      return [[Multiply alloc] init];
+    if ([@"/" isEqual:opName])      return [[Divide alloc] init];
+    if ([@"+" isEqual:opName])      return [[Add alloc] init];
+    if ([@"-" isEqual:opName])      return [[Subtract alloc] init];
+    if ([@"sin" isEqual:opName])    return [[Sine alloc] init];
+    if ([@"cos" isEqual:opName])    return [[Cos alloc] init];
+    if ([@"sqrt" isEqual:opName])   return [[Sqrt alloc] init];
+    if ([@"π" isEqual:opName])      return [[Pi alloc] init];
+    if ([@"+/-" isEqual:opName])    return [[Inverse alloc] init];
+    @throw [NSException exceptionWithName:@"Unrecognized operation name" reason:[NSString stringWithFormat:@"Invalid operation name %@", opName] userInfo:nil];
+
+}
+
 
 - (void)setVariable:(NSString *)name toValue:(double)value {
     [self.variablesMap setValue:[NSNumber numberWithDouble:value] forKey:name];
@@ -132,6 +115,13 @@
 }
 
 - (void)pushOperand:(id)operand {
+    if ([operand isKindOfClass:[NSString class]])
+    {
+        NSString *op = operand;
+        id operation = [CalculatorBrain fromString:op];
+        [self.operandStack addObject:operation];
+        
+    }
     [self.operandStack addObject:operand];
 }
 
@@ -140,7 +130,8 @@
 }
 
 - (double)performOperation:(NSString *)operation {
-    [self.programStack addObject:operation];
+    id op = [CalculatorBrain fromString:operation];
+    [self.programStack addObject:op];
     return [CalculatorBrain runProgram:self.program];
 }
 
