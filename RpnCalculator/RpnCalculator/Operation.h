@@ -17,6 +17,9 @@
 - (NSString *) description:(NSMutableArray *) stack;
 @end
 
+@interface OperationBase : NSObject <Operation>
+@end
+
 @interface Multiply : NSObject <Operation>
 @end
 

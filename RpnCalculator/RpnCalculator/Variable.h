@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface Variable : NSObject
+@interface Variable : NSObject <NSCopying>
 
 @property (nonatomic, strong) NSObject *key;
 

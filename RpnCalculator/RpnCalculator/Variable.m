@@ -28,4 +28,18 @@
     return [[Variable alloc] initWithKey:theKey];
 }
 
+- (BOOL) isEqual:(id)object {
+    if (object == self) return true;
+    if (! [object isKindOfClass:[self class]]) return false;
+    return [self.key isEqual:[object key]];
+}
+
+- (NSUInteger) hash {
+    return self.key.hash;
+}
+
+- (id) copyWithZone:(NSZone *) zone {
+    return [[Variable allocWithZone:zone] initWithKey:self.key];
+}
+
 @end

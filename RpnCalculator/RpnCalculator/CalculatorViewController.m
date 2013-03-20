@@ -21,6 +21,7 @@
 @implementation CalculatorViewController
 @synthesize display = _display;
 @synthesize history = _history;
+@synthesize variables = _variables;
 @synthesize description = _description;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize brain = _brain;
@@ -89,6 +90,19 @@
 
 - (IBAction)testOneButtonPressed:(UIButton *)sender {
 //    [self.brain ]
+    double testOneInitialValue = 4.5;
+    NSSet *variablesUsed = [CalculatorBrain variablesUsedInProgram:[self.brain program]];
+    NSString *displayText = @"";
+    NSMutableDictionary *varsWithValues = [[NSMutableDictionary alloc] init];
+    for (Variable *var in variablesUsed) {
+        NSLog(@"Using %g for variable %@", testOneInitialValue, var);
+        [varsWithValues setObject:[NSNumber numberWithDouble:testOneInitialValue] forKey:var];
+        [displayText stringByAppendingFormat:@"%@ = %g, ", var, testOneInitialValue];
+        testOneInitialValue += 1.5;
+    }
+    displayText = [displayText stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@", "]];
+    self.variables.text = displayText;
+    self.display.text = displayText;
     
 }
 
@@ -120,6 +134,8 @@
 
 - (void)viewDidUnload {
     [self setDescription:nil];
+    [self setVariables:nil];
+    [self setVariables:nil];
     [super viewDidUnload];
 }
 @end

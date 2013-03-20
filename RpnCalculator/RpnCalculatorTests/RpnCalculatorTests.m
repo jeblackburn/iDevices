@@ -48,7 +48,7 @@
     [brain performOperation:@"*"];
     id program = brain.program;
     NSString *desc = [CalculatorBrain descriptionOfProgram:program];
-    STAssertEqualObjects(@"(2.5 * 2)", desc, @"Description is broken");
+    STAssertEqualObjects(@"2.5 * 2", desc, @"Description is broken");
 }
 
 - (void) testDescriptionForNestedOperation {
@@ -59,9 +59,19 @@
     [brain pushOperand: [NSNumber numberWithDouble:4]];
     [brain performOperation:@"/"];
     NSString *desc = [CalculatorBrain descriptionOfProgram:brain.program];
-    STAssertEqualObjects(@"((2.5 * 2) / 4)", desc, @"Description is broken");
-    
-    
+    STAssertEqualObjects(@"2.5 * 2 / 4", desc, @"Description is broken");
 }
+
+- (void) testDescriptionForNestedOperationRequiringParens {
+    CalculatorBrain *brain = [[CalculatorBrain alloc] init];
+    [brain pushOperand:[NSNumber numberWithDouble:2.5]];
+    [brain pushOperand:[NSNumber numberWithDouble:2]];
+    [brain performOperation:@"+"];
+    [brain pushOperand: [NSNumber numberWithDouble:4]];
+    [brain performOperation:@"/"];
+    NSString *desc = [CalculatorBrain descriptionOfProgram:brain.program];
+    STAssertEqualObjects(@"(2.5 + 2) / 4", desc, @"Description is broken");
+}
+
 
 @end

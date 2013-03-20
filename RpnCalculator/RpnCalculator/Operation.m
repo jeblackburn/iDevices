@@ -39,6 +39,20 @@
 
 @end
 
+@implementation OperationBase
+- (double) operate:(NSMutableArray *) stack {
+    double second = [OperationUtil popOperandOffStack:stack];
+    double first = [OperationUtil popOperandOffStack:stack];
+    NSLog(@"%@: %g, %g", [[self class] description], first, second);
+    return first * second;
+}
+- (NSString *) description:(NSMutableArray *)stack {
+    NSString *second = [OperationUtil popDescriptionOffStack:stack];
+    NSString *first = [OperationUtil popDescriptionOffStack:stack];
+    return [NSString stringWithFormat:@"%@ * %@", first, second];
+}
+@end
+
 @implementation Multiply
 - (double) operate:(NSMutableArray *) stack {
     double second = [OperationUtil popOperandOffStack:stack];

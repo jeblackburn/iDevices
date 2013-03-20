@@ -65,6 +65,7 @@
         if ([nextItem conformsToProtocol:@protocol(Operation)]) {
             description = [description stringByAppendingFormat:@"%@", [nextItem description:stack]];
         } else {
+            NSLog(@"Adding to description: %@", nextItem);
             description = [description stringByAppendingFormat:@"%@ ", nextItem];
         }
     }
@@ -115,14 +116,16 @@
 }
 
 - (void)pushOperand:(id)operand {
+    NSLog(@"Adding operand %@ of type %@", operand, [operand class]);
     if ([operand isKindOfClass:[NSString class]])
     {
         NSString *op = operand;
         id operation = [CalculatorBrain fromString:op];
-        [self.operandStack addObject:operation];
-        
+        [self.operandStack addObject:operation];        
+    } else {
+        [self.operandStack addObject:operand];
     }
-    [self.operandStack addObject:operand];
+    NSLog(@"Stack: %@", self.operandStack);
 }
 
 - (void)clear {
